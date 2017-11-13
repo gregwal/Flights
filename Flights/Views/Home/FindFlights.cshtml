@@ -1,0 +1,82 @@
+﻿@model FlightsViewModel
+@{
+    ViewBag.Title = "Find Flights";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Find Flights</h2>
+
+<div id="flightSearch">
+    @using (Ajax.BeginForm("FindFlights", "Home", null,
+                                        new AjaxOptions { InsertionMode = InsertionMode.Replace, UpdateTargetId = "flightSearch", LoadingElementId = "loading" },
+                                        new { @class = "form form-inline" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="form-element-padding">
+            <div class="form-group">
+                @Html.LabelFor(model => model.From, new { @class = "control-label" })
+                @Html.ValidationMessageFor(model => model.From)
+                @Html.DropDownListFor(model => model.From, Model.FromSelectItems, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.To, new { @class = "control-label" })
+                @Html.ValidationMessageFor(model => model.To)
+                @Html.DropDownListFor(model => model.To, Model.ToSelectItems, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </div>
+    }
+    @if (Model.Flights != null)
+    {
+        <div class="form-element-padding">
+            <table id="flightsTable" class="table table-bordered table-striped table-condensed hover">
+                <thead>
+                    <tr>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Main Cabin Price</th>
+                        <th>First Class Price</th>
+                        <th>Departs</th>
+                        <th>Arrives</th>
+                        <th>Flight Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Flights.Models.Flight f in Model.Flights)
+                {
+                        <tr>
+                            <td>@f.From</td>
+                            <td>@f.To</td>
+                            <td>@String.Format("{0:c0}", f.MainCabinPrice)</td>
+                            <td>@String.Format("{0:c0}", f.FirstClassPrice)</td>
+                            <td>@f.Departs</td>
+                            <td>@f.Arrives</td>
+                            <td>@f.FlightNumber</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@section Scripts
+{
+    <script>
+        $(document).ready(function () {
+            $.fn.dataTable.moment('h:mm A');
+
+            var table = $('#flightsTable').DataTable(
+                {
+                    "paging": false,
+                    "info": false,
+                    "searching": false,
+                    "order": [[3, "asc"]]
+                }
+            );
+        });
+    </script>
+}
+

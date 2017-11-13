@@ -1,0 +1,45 @@
+﻿@model CurrencyViewModel
+@{
+    ViewBag.Title = "Currency Converter";
+}
+<h2>Currency Converter</h2>
+<div id="currencyConverter" class="container">
+    @using (Ajax.BeginForm("CurrencyConverter", "Home", null,
+                                new AjaxOptions { InsertionMode = InsertionMode.Replace, UpdateTargetId = "currencyConverter", LoadingElementId = "loading" },
+                                new { @class = "form form-horizontal" }))
+    {
+        @Html.AntiForgeryToken()
+        <div class="form-element-padding">
+            <div class="form-group">
+                @Html.LabelFor(model => model.To, new { @class = "control-label" })
+                @Html.ValidationMessageFor(model => model.To)
+                @Html.DropDownListFor(model => model.To, Model.ToSelectItems, new { @class = "form-control", id = "toCurrencyDropDown", onchange = "ClearForm()" })
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Amount, new { @class = "control-label" })
+                @Html.ValidationMessageFor(model => model.Amount)
+                @Html.TextBoxFor(model => model.Amount, new { @class = "form-control", id = "amount", onchange = "ClearForm()", Value = "10" })
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary" onclick="">Convert</button>
+            </div>
+        </div>
+    }
+    @if (Model.ConvertedAmount != null)
+    {
+        <hr />
+        <div class="form-group">
+            @Html.LabelFor(model => model.ConvertedAmount, new { @class = "control-label" })
+            @Html.ValidationMessageFor(model => model.ConvertedAmount)
+            @Html.TextBoxFor(model => model.ConvertedAmount, new { @class = "form-control", id = "convertedAmount", onchange = "ClearForm()" })
+        </div>
+    }
+</div>
+@section Scripts
+{
+    <script>
+        function ClearForm() {
+            $("#convertedAmount").val("");
+        }
+    </script>
+}
